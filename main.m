@@ -34,7 +34,22 @@ length_1st = length(leftWall_1);
 length_2nd = length(leftWall_2);
 length_3rd = length(leftWall_3);
 
+first_order  = zeros(2*length_1st, 3, 1);
+second_order = zeros(2*length_2nd, 3, 1);
+third_order  = zeros(2*length_3rd, 3, 1);
+
 for i1 = 1:length_1st
-    ImagePoint(n_leftWall, [leftWall_1(i1,:), 0])
-    ImagePoint(n_rightWall, [rightWall_1(i1,:), 0])
+    first_order((i1-1)*2+1, :, :) = ImagePoint(n_leftWall,  [leftWall_1(i1,:),  0]);     % The 0 at the end is the z-coordinate
+    first_order((i1-1)*2+2, :, :) = ImagePoint(n_rightWall, [rightWall_1(i1,:), 0]);     % The 0 at the end is the z-coordinate
 end
+
+for i2 = 1:length_2nd
+    second_order((i2-1)*2+1, :, :) = ImagePoint(n_leftWall,  [leftWall_2(i2,:),  0]);     % The 0 at the end is the z-coordinate
+    second_order((i2-1)*2+2, :, :) = ImagePoint(n_rightWall, [rightWall_2(i2,:), 0]);     % The 0 at the end is the z-coordinate
+end
+
+for i3 = 1:length_3rd
+    third_order((i3-1)*2+1, :, :) = ImagePoint(n_leftWall,  [leftWall_3(i3,:),  0]);     % The 0 at the end is the z-coordinate
+    third_order((i3-1)*2+2, :, :) = ImagePoint(n_rightWall, [rightWall_3(i3,:), 0]);     % The 0 at the end is the z-coordinate
+end
+
