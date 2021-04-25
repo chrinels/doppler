@@ -22,3 +22,11 @@ rng(5); rightWall_2 = [ unifrnd(p2(1), p2(1)+W, [round(A*chi2), 1]), ...
                     
 rng(6); rightWall_3 = [ unifrnd(p2(1), p2(1)+W, [round(A*chi3), 1]), ...
                         unifrnd(p2(2), p2(2)+H, [round(A*chi3), 1])];
+
+                    
+% Wall, just scatterers not distinguishing order
+leftWall    = [leftWall_1; leftWall_2; leftWall_3];
+rightWall   = [rightWall_1; rightWall_2; rightWall_3];
+
+clear leftWall_1 leftWall_2 leftWall_3
+clear rightWall_1 rightWall_2 rightWall_3

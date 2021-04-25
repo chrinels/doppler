@@ -1,5 +1,12 @@
 %% Clear workspace and close all open figures.
 clear; close all; clc
+% Some colors to use
+red         = [1 0 0];
+green       = [0 1 0];
+blue        = [0 0 1];
+redish      = [0.9290 0.6940 0.1250];
+yellowish   = [0.8500 0.3250 0.0980];
+blueish     = [0 0.4470 0.7410];
 
 %% Setup the environment, scatterers, walls etc.
 % 11 new variables in Workspace
@@ -9,47 +16,48 @@ SetupEnvironment
 % This will put 6 new variables in the Workspace, relating to the walls
 GenerateScatterers
 
-fprintf('Desired 1st order scatterer intensity: \t%d\n', chi1)
-fprintf('Actual 1st order scatterer intensity: \t%d\n\n', length(leftWall_1) / A)
-fprintf('Desired 2nd order scatterer intensity: \t%d\n', chi2)
-fprintf('Actual 2nd order scatterer intensity: \t%d\n\n', length(leftWall_2) / A)
-fprintf('Desired 3rd order scatterer intensity: \t%d\n', chi3)
-fprintf('Actual 3rd order scatterer intensity: \t%d\n\n', length(leftWall_3) / A)
+allScatterers = [leftWall; rightWall];
 
-RxPos       = [0, 5, 0]';
-TxStartPos  = [0, H-5, 0]';
+RxPos       = [-3, 5, 0]';
+TxStartPos  = [3, H-5, 0]';
 TxVel       = [0, -10, 0]'; 
 
 %% Plot the simulation start
+
 fh = figure(); hold on;
 rectangle('Position', [p1(1), p1(2), W, H])
 rectangle('Position', [p2(1), p2(2), W, H])
-PlotScatterers(fh, leftWall_1,  leftWall_2,  leftWall_3, ...
-                   rightWall_1, rightWall_2, rightWall_3)
+PlotScatterers(fh, allScatterers, blueish)
 scatter(RxPos(1), RxPos(2), 'filled', 'MarkerFaceColor',[1 0 0])
 scatter(TxStartPos(1), TxStartPos(2), 'filled', 'MarkerFaceColor',[0 1 0])
 
+
+%% Time
+
+fs      = 10;     % [Hz]
+Ts      = 1/fs;      % [s]
+tend    = 8;         % [s]
+
+t       = 0:Ts:tend;
+
+TxPos   = (TxStartPos + TxVel.*t)';     % Each row is a position
+
 %% Do some mirroring and then the projections on to Rx.
-length_1st = length(leftWall_1);
-length_2nd = length(leftWall_2);
-length_3rd = length(leftWall_3);
 
-first_order  = zeros(2*length_1st, 3, 1);
-second_order = zeros(2*length_2nd, 3, 1);
-third_order  = zeros(2*length_3rd, 3, 1);
+% Length should be same for Right Wall
+numberOfScatterers = length(leftWall);
 
-for i1 = 1:length_1st
-    first_order((i1-1)*2+1, :, :) = ImagePoint(n_leftWall,  [leftWall_1(i1,:),  0]);     % The 0 at the end is the z-coordinate
-    first_order((i1-1)*2+2, :, :) = ImagePoint(n_rightWall, [rightWall_1(i1,:), 0]);     % The 0 at the end is the z-coordinate
+first_order  = zeros(2*numberOfScatterers, 3, 1);
+
+
+for i = 1:numberOfScatterers
+    first_order((i-1)*2+1, :, :) = ImagePoint(n_leftWall,  [leftWall(i,:),  0]);     % The 0 at the end is the z-coordinate
+    first_order((i-1)*2+2, :, :) = ImagePoint(n_rightWall, [rightWall(i,:), 0]);     % The 0 at the end is the z-coordinate
 end
 
-for i2 = 1:length_2nd
-    second_order((i2-1)*2+1, :, :) = ImagePoint(n_leftWall,  [leftWall_2(i2,:),  0]);     % The 0 at the end is the z-coordinate
-    second_order((i2-1)*2+2, :, :) = ImagePoint(n_rightWall, [rightWall_2(i2,:), 0]);     % The 0 at the end is the z-coordinate
-end
+PlotScatterers(fh, first_order, yellowish)
 
-for i3 = 1:length_3rd
-    third_order((i3-1)*2+1, :, :) = ImagePoint(n_leftWall,  [leftWall_3(i3,:),  0]);     % The 0 at the end is the z-coordinate
-    third_order((i3-1)*2+2, :, :) = ImagePoint(n_rightWall, [rightWall_3(i3,:), 0]);     % The 0 at the end is the z-coordinate
+for i = 1:length(t)
+    PlotScatterers(fh, TxPos(i,:), green)
+    pause(0.1)
 end
-
