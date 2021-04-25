@@ -35,6 +35,6 @@ length_2nd = length(leftWall_2);
 length_3rd = length(leftWall_3);
 
 for i1 = 1:length_1st
-    ImagePoint(n_leftWall, leftWall_1(i1))
-    ImagePoint(n_rightWall, rightWall_1(i1))
+    ImagePoint(n_leftWall, [leftWall_1(i1,:), 0])
+    ImagePoint(n_rightWall, [rightWall_1(i1,:), 0])
 end
