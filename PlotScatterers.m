@@ -1,11 +1,13 @@
 function PlotScatterers(fh, scatterers, color)
 
+    sc = cell2mat({scatterers.Position}');
+
     figure(fh)
     hold on
-    scatter(scatterers(:,1), scatterers(:,2), 'filled', 'MarkerFaceColor',color)
+    scatter(sc(:,1), sc(:,2), 'filled', 'MarkerFaceColor',color)
 
-    xlim([-50, 50])
-    ylim([-5, 105])
+    xlim([-20, 20])
+    ylim([-5, 205])
 
 end
 
