@@ -29,9 +29,9 @@ TxVel       = [0, -20, 0]';
 %% Time
 SimulationParams = struct();
 SimulationParams.fs      = 1e3;     % [Hz]
-SimulationParams.Ts      = 1/fs;    % [s]
+SimulationParams.Ts      = 1/SimulationParams.fs;    % [s]
 SimulationParams.tend    = 9.5;     % [s]
-SimulationParams.t       = 0:Ts:tend;
+SimulationParams.t       = 0:SimulationParams.Ts:SimulationParams.tend;
 
 TxPos   = (TxStartPos + TxVel.*SimulationParams.t)';     % Each row is a position
 
