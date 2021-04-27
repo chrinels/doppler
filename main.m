@@ -21,7 +21,7 @@ EnvironmentParams.p1            = [-EnvironmentParams.StreetWidth/2 - Environmen
 EnvironmentParams.p2            = [+EnvironmentParams.StreetWidth/2,                       0, 0];   % Point wall 2 (lower left corner)
 EnvironmentParams.A             = EnvironmentParams.W * EnvironmentParams.StreetLength;             % Scatterer area [m^2]
 
-Scatterers                      = GenerateScatterers(EnvironmentParams);
+MPCs                            = GenerateScatterers(EnvironmentParams);
 
 RxPos       = [ EnvironmentParams.StreetWidth/4, EnvironmentParams.StreetLength/2, 0];
 TxStartPos  = [-EnvironmentParams.StreetWidth/4, EnvironmentParams.StreetLength-5, 0];
@@ -40,14 +40,21 @@ TxPos   = TxStartPos + TxVel.*SimulationParams.t';     % Each row is a position
 
 fh = figure(); hold on;
 
-PlotScatterers(fh, Scatterers.FirstOrder,    Colors.blueish)
-PlotScatterers(fh, Scatterers.SecondOrder,   Colors.redish)
-PlotScatterers(fh, Scatterers.ThirdOrder,    Colors.yellowish)
+PlotScatterers(fh, MPCs.FirstOrder,    Colors.blueish)
+PlotScatterers(fh, MPCs.SecondOrder,   Colors.redish)
+PlotScatterers(fh, MPCs.ThirdOrder,    Colors.yellowish)
 
 scatter(RxPos(1),       RxPos(2),       'filled', 'MarkerFaceColor', Colors.red)
 scatter(TxStartPos(1),  TxStartPos(2),  'filled', 'MarkerFaceColor', Colors.green)
 
 %% Do some mirroring and then the projections on to Rx.
 
-cell2mat({Scatterers.FirstOrder.Position}') - RxPos;
+RxMPC1 = vecnorm(cell2mat({MPCs.FirstOrder.Position}')  - RxPos, 2, 2);
+RxMPC2 = vecnorm(cell2mat({MPCs.SecondOrder.Position}') - RxPos, 2, 2);
+RxMPC3 = vecnorm(cell2mat({MPCs.ThirdOrder.Position}')  - RxPos, 2, 2);
+
+% For our simple 2D canyon, we only have 2 normals
+Scatterer.VecAngle(RxPos-cell2mat({MPCs.FirstOrder.Position}'), cell2mat({MPCs.FirstOrder.Normal}'), 1);
+
+
 
