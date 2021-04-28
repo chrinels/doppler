@@ -17,9 +17,9 @@ EnvironmentParams.StreetWidth   = 6;        % Width [m]
 EnvironmentParams.chi1          = 0.052;    % Density of 1st order scatterers [1/m^2]
 EnvironmentParams.chi2          = 0.045;    % Density of 2nd order scatterers [1/m^2]
 EnvironmentParams.chi3          = 0.03;     % Density of 3rd order scatterers [1/m^2]
-EnvironmentParams.G0_1          = unifrnd(-65, -48);
-EnvironmentParams.G0_2          = unifrnd(-70, -59);
-EnvironmentParams.G0_3          = unifrnd(-75, -65);
+EnvironmentParams.G0_1          = @() unifrnd(-65, -48);
+EnvironmentParams.G0_2          = @() unifrnd(-70, -59);
+EnvironmentParams.G0_3          = @() unifrnd(-75, -65);
 EnvironmentParams.p1            = [-EnvironmentParams.StreetWidth/2 - EnvironmentParams.W, 0, 0];   % Point wall 1 (lower left corner)
 EnvironmentParams.p2            = [+EnvironmentParams.StreetWidth/2,                       0, 0];   % Point wall 2 (lower left corner)
 EnvironmentParams.A             = EnvironmentParams.W * EnvironmentParams.StreetLength;             % Scatterer area [m^2]
@@ -54,6 +54,4 @@ PlotScatterers(fh, Rx,                  Colors.red)
 PlotScatterers(fh, Tx,                  Colors.green)
 
 %% Simulate
-[Delay, Doppler] = SimulateDelayAndDoppler(SimulationParams, MPCs, Tx, Rx); 
-
-
+ht = GetImpulseResponse(EnvironmentParams, SimulationParams, MPCs, Tx, Rx);
