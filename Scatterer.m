@@ -20,7 +20,7 @@ classdef Scatterer
         function dist = Distance(obj, otherScatterer)
             %Distance Euclidean distance
             %   Euclidean distance between this scatterer and another.
-            dist = norm(obj.Position + otherScatterer.Position);
+            dist = norm(obj.Position - otherScatterer.Position, 2);
         end
         
         function ang = Angle(obj, otherScatterer, deg)
