@@ -11,6 +11,8 @@ function [Delay, Doppler] = SimulateDelayAndDoppler(SimParams, MPCs, Tx, Rx)
     los_delay = zeros(length(SimParams.t), 1);
     los_doppler = zeros('like', los_delay);
     
+    wb = waitbar(0,'Please wait...');
+    
     for ti = 1:length(SimParams.t)
         
         TxPos = Tx.Position + Tx.Velocity*SimParams.Ts;
@@ -101,7 +103,7 @@ function [Delay, Doppler] = SimulateDelayAndDoppler(SimParams, MPCs, Tx, Rx)
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %
-        %
+        %   Make sure the matrices grow as needed.
         %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         if ti > 1
@@ -131,7 +133,7 @@ function [Delay, Doppler] = SimulateDelayAndDoppler(SimParams, MPCs, Tx, Rx)
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %
-        %
+        %   Add results to structs
         %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         Delay.LoS = los_delay;
@@ -143,9 +145,12 @@ function [Delay, Doppler] = SimulateDelayAndDoppler(SimParams, MPCs, Tx, Rx)
         Doppler.FirstOrder(ti,:) = doppler1;
         Doppler.SecondOrder(ti,:) = doppler2;
         Doppler.ThirdOrder(ti,:) = doppler3;
+        
+        waitbar(ti / length(SimParams.t))
 
     end
     
+    close(wb);
 
 end
 

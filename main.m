@@ -38,7 +38,7 @@ clear RxStartPos TxStartPos TxVel RxVel
 
 % Time
 SimulationParams = struct();
-SimulationParams.fs      = 1e2;     % [Hz]
+SimulationParams.fs      = 1e3;     % [Hz]
 SimulationParams.Ts      = 1/SimulationParams.fs;    % [s]
 SimulationParams.tend    = 10;     % [s]
 SimulationParams.t       = 0:SimulationParams.Ts:SimulationParams.tend;
@@ -54,4 +54,6 @@ PlotScatterers(fh, Rx,                  Colors.red)
 PlotScatterers(fh, Tx,                  Colors.green)
 
 %% Simulate
-[Delay, Doppler] = Simulate(EnvironmentParams, SimulationParams, MPCs, Tx, Rx); 
+[Delay, Doppler] = SimulateDelayAndDoppler(SimulationParams, MPCs, Tx, Rx); 
+
+
