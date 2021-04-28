@@ -34,7 +34,7 @@ RxVel       = [0, +20, 0];
 Tx = Transceiver(TxStartPos,[0,0,0], TxVel, 5.9e9);
 Rx = Transceiver(RxStartPos,[0,0,0], RxVel, 5.9e9);
 
-clear RxPos TxStartPos TxVel
+clear RxStartPos TxStartPos TxVel RxVel
 
 % Time
 SimulationParams = struct();

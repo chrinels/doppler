@@ -17,6 +17,17 @@ classdef Scatterer
             obj.Normal = normalVector;
         end
         
+        
+        function x = X(obj)
+            x = obj.Position(1);
+        end
+        function y = Y(obj)
+            y = obj.Position(2);
+        end
+        function z = Z(obj)
+            z = obj.Position(3);
+        end
+        
         function dist = Distance(obj, otherScatterer)
             %Distance Euclidean distance
             %   Euclidean distance between this scatterer and another.
