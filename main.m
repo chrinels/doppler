@@ -1,5 +1,10 @@
 %% Clear workspace and close all open figures.
 clear; close all; clc
+
+addpath('./classes')
+addpath('./functions')
+addpath('./scripts')
+
 % Some colors to use
 Colors = struct();
 Colors.red         = [  1         0         0];
