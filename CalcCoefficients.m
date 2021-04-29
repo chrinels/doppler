@@ -11,7 +11,7 @@ function AL = CalcCoefficients(SimulationParams, f, G, mpcs_delay, mpcs_doppler)
     delay(delay==0) = NaN;
     doppler(delay==0) = NaN;
 
-    G0 = 10.^log10(G/10); % Log -> Linear
+    G0 = 10.^log10(G/20); % Log -> Linear
     AL = lambda./(4*pi*delay).*G0.*exp(2j*pi*f*tau).*exp(-2j*pi*doppler.*(t-tau));
 
 end
