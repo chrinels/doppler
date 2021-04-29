@@ -53,9 +53,9 @@ clear RxStartPos TxStartPos TxVel RxVel
 SimulationParams = struct();
 % SimulationParams.Nfft    = 52;
 % SimulationParams.df      = 156.25e3; % for 802.11p df=156.25e3, 802.11b df=312.5e3
-SimulationParams.fs      = 1e3;     % [Hz]
+SimulationParams.fs      = 5e2;     % [Hz]
 SimulationParams.Ts      = 1/SimulationParams.fs;    % [s]
-SimulationParams.tend    = 10;     % [s]
+SimulationParams.tend    = 9.5;     % [s]
 SimulationParams.t       = 0:SimulationParams.Ts:SimulationParams.tend;
 
 %% Plot the simulation start
@@ -71,14 +71,34 @@ PlotScatterers(fh, Tx,                  Colors.green)
 %% Simulate
 [A, Delay, Doppler] = GetCompexCoefficients(EnvironmentParams, SimulationParams, MPCs, Tx, Rx);
 
+A_delay     = zeros(size(Delay), 'like', A);
+A_doppler   = zeros(size(Doppler),'like', A);
+
+for K = 1:length(SimulationParams.t)
+    [~, I] = sort(Delay(K,:));
+    Delay(K,:) = Delay(K,I);
+    A_delay(K,:) = A(K,I);
+
+    [~, J] = sort(Doppler(K,:));
+    Doppler(K,:) = Doppler(K,J);
+    A_doppler(K,:) = A(K, J);
+end
+
+    
 
 %%
 
-figure; plot(Delay(:,1)/physconst('LightSpeed'))
-
-figure;
 t = 200;
-stem(Delay(t,:)/physconst('LightSpeed'), abs(A(t,:)))
-xlim([0, max(max(Delay/physconst('LightSpeed')))])
+figure('Name', sprintf('Power delay, t = %d s', SimulationParams.t(t))); 
+plot(Delay(t,:), abs(A_delay(t,:)).^2)
 
-figure; imagesc(abs(A).^2)
+figure('Name', 'Doppler');
+imagesc(Doppler);
+
+figure('Name', 'Doppler Histogram');
+histogram(Doppler(Doppler~=0), 50);
+
+figure; imagesc(10*log10(abs(A_delay).^2))
+figure; 
+sh = surf(10*log10(abs(A_doppler).^2), 'EdgeAlpha', 0.001);
+view([0, 90])
