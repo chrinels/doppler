@@ -25,7 +25,7 @@ function [Delay, Doppler] = SimulateDelayAndDoppler(SimParams, MPCs, Tx, Rx)
         RxPosY = RxPos(2);
         
         % Line-of-Sight
-        los_delay(ti) = Rx.Distance(Tx)/physconst('LightSpeed');
+        los_delay(ti) = Rx.Distance(Tx);
         
         tx2rx = Rx.Position - Tx.Position;
         total_velocity = Tx.Velocity - Rx.Velocity;
