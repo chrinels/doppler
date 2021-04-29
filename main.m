@@ -54,4 +54,4 @@ PlotScatterers(fh, Rx,                  Colors.red)
 PlotScatterers(fh, Tx,                  Colors.green)
 
 %% Simulate
-ht = GetImpulseResponse(EnvironmentParams, SimulationParams, MPCs, Tx, Rx);
+[A, Delay, Doppler] = GetCompexCoefficients(EnvironmentParams, SimulationParams, MPCs, Tx, Rx);
