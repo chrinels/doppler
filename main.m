@@ -88,16 +88,40 @@ end
 
 %%
 
+% https://gubner.ece.wisc.edu/matlabLaTeXandIEEE/matlabPlotForIEEEtran.pdf
+set(0,'DefaultTextFontName','Times',...
+    'DefaultTextFontSize',18,...
+    'DefaultAxesFontName','Times',...
+    'DefaultAxesFontSize',18,...
+    'DefaultLineLineWidth',1,...
+    'DefaultLineMarkerSize',7.75)
+
+
 t = 200;
 figure('Name', sprintf('Power delay, t = %d s', SimulationParams.t(t))); 
 plot(Delay(t,:), abs(A_delay(t,:)).^2)
+title(sprintf('Power delay, t = %2.2d s', SimulationParams.t(t)))
+xlabel('Delay, m')
+ylabel('Power, W')
+print('-depsc2','-r600','GSCMpowerDelay.eps')
+print('-dpdf','-r600','GSCMpowerDelay.pdf')
 
 figure('Name', 'Doppler');
 imagesc(Doppler);
 
 figure('Name', 'Doppler Histogram');
 histogram(Doppler(Doppler~=0), 50);
+title('Doppler Histogram')
+xlabel('Doppler shift, Hz')
+print('-depsc2','-r600','GSCMdopplerHist.eps')
+print('-dpdf','-r600','GSCMdopplerHist.pdf')
 
 
 t = repmat(SimulationParams.t', 1, size(A, 2));
-figure; surf(t, Doppler, abs(A_doppler).^2, 'EdgeAlpha', 0.001); view(2)
+figure; 
+surf(t, Doppler, abs(A_doppler).^2, 'EdgeAlpha', 0.001); 
+view(2)
+xlabel('Time, s')
+ylabel('Doppler, Hz')
+print('-depsc2','-r600','GSCMdopplerVtime.eps')
+print('-dpdf','-r600','GSCMdopplerVtime.pdf')
