@@ -53,7 +53,7 @@ clear RxStartPos TxStartPos TxVel RxVel
 SimulationParams = struct();
 % SimulationParams.Nfft    = 52;
 % SimulationParams.df      = 156.25e3; % for 802.11p df=156.25e3, 802.11b df=312.5e3
-SimulationParams.fs      = 5e2;     % [Hz]
+SimulationParams.fs      = 1e2;     % [Hz]
 SimulationParams.Ts      = 1/SimulationParams.fs;    % [s]
 SimulationParams.tend    = 9.5;     % [s]
 SimulationParams.t       = 0:SimulationParams.Ts:SimulationParams.tend;
@@ -98,7 +98,6 @@ imagesc(Doppler);
 figure('Name', 'Doppler Histogram');
 histogram(Doppler(Doppler~=0), 50);
 
-figure; imagesc(10*log10(abs(A_delay).^2))
-figure; 
-sh = surf(10*log10(abs(A_doppler).^2), 'EdgeAlpha', 0.001);
-view([0, 90])
+
+t = repmat(SimulationParams.t', 1, size(A, 2));
+figure; surf(t, Doppler, abs(A_doppler).^2, 'EdgeAlpha', 0.001); view(2)
