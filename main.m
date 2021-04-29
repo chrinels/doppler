@@ -37,8 +37,18 @@ Rx = Transceiver(RxStartPos,[0,0,0], RxVel, 5.9e9);
 clear RxStartPos TxStartPos TxVel RxVel
 
 % Time
+
+% 
+% BW = 10e6; % depends on the specification 802.11p bandwidth has 10 MHz, 802.11b has 20 MHz
+% Nfft = 52;
+% df = 156.25e3; % for 802.11p df=156.25e3, 802.11b df=312.5e3
+% fs = 52*df;
+% ts = 1/fs;
+% dt = 0:ts:1000*ts;
 SimulationParams = struct();
-SimulationParams.fs      = 1e1;     % [Hz]
+% SimulationParams.Nfft    = 52;
+% SimulationParams.df      = 156.25e3; % for 802.11p df=156.25e3, 802.11b df=312.5e3
+SimulationParams.fs      = 1e3;     % [Hz]
 SimulationParams.Ts      = 1/SimulationParams.fs;    % [s]
 SimulationParams.tend    = 10;     % [s]
 SimulationParams.t       = 0:SimulationParams.Ts:SimulationParams.tend;
@@ -55,3 +65,15 @@ PlotScatterers(fh, Tx,                  Colors.green)
 
 %% Simulate
 [A, Delay, Doppler] = GetCompexCoefficients(EnvironmentParams, SimulationParams, MPCs, Tx, Rx);
+
+
+%%
+
+figure; plot(Delay(:,1)/physconst('LightSpeed'))
+
+figure;
+t = 200;
+stem(Delay(t,:)/physconst('LightSpeed'), abs(A(t,:)))
+xlim([0, max(max(Delay/physconst('LightSpeed')))])
+
+figure; imagesc(abs(A).^2)

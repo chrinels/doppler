@@ -1,4 +1,4 @@
-function Ai = CalcCoefficients(SimulationParams, f, G, mpcs_delay, mpcs_doppler)
+function AL = CalcCoefficients(SimulationParams, f, G, mpcs_delay, mpcs_doppler)
     
     lambda = f/physconst('LightSpeed');
 
@@ -12,7 +12,7 @@ function Ai = CalcCoefficients(SimulationParams, f, G, mpcs_delay, mpcs_doppler)
     doppler(delay==0) = NaN;
 
     G0 = 10.^log10(G/10); % Log -> Linear
-    Ai = 20*log10(lambda./(4*pi*delay).*G0.*exp(2j*pi*f*tau).*exp(-2j*pi*doppler.*(t-tau)));
+    AL = lambda./(4*pi*delay).*G0.*exp(2j*pi*f*tau).*exp(-2j*pi*doppler.*(t-tau));
 
 end
 

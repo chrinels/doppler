@@ -1,5 +1,4 @@
-clear all
-close all
+
 
 c = physconst('LightSpeed');
 % maximum NLoS distance for simulation purposes
@@ -21,7 +20,7 @@ dt = 0:ts:1000*ts;
 
 
 % Christian and Galya, make sure to have the same grid
-time_domain = 0:0.01:5; % here you should put your time grid
+time_domain = SimulationParams.t; % here you should put your time grid
 h_t_tau = zeros(length(time_domain),length(dt));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -29,16 +28,19 @@ h_t_tau = zeros(length(time_domain),length(dt));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % paths distances
-d_matrix = sort(randi(MaxDist, length(time_domain), N_path),2); % here you need to put your distances
+d_matrix = Delay;% sort(randi(MaxDist, length(time_domain), N_path),2); % here you need to put your distances
 % attenuation coefficients
-a_l = sort(randn(length(time_domain),N_path) + 1j*randn(length(time_domain),N_path),2,'descend'); % here you need to put your path coefficients
+a_l = A; %sort(randn(length(time_domain),N_path) + 1j*randn(length(time_domain),N_path),2,'descend'); % here you need to put your path coefficients
 
 % delays matrix
-d_tau = d_matrix/c;
+d_tau = Delay/c;
+
+a_l(isnan(a_l)) = 0;
+d_tau(isnan(d_tau)) = 0;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Here you should put your data
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%%
 for tt = 1:length(time_domain)
     % preparation for sinc function
     sinc_mat = zeros(N_path,length(dt));

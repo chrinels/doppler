@@ -3,7 +3,7 @@ function [A, Delay, Doppler] = GetCompexCoefficients(EnvironmentParams, Simulati
 %   Detailed explanation goes here
     [Delay, Doppler] = SimulateDelayAndDoppler(SimulationParams, MPCs, Tx, Rx);
     
-    G = ones(size(Delay.LoS));
+    G = 10*ones(size(Delay.LoS));
     A_LOS = CalcCoefficients(SimulationParams, Tx.Frequency, G, Delay.LoS, Doppler.LoS);
     
     G = EnvironmentParams.G0_1(size(Delay.FirstOrder));
