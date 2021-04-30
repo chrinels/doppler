@@ -22,9 +22,11 @@ EnvironmentParams.StreetWidth   = 6;        % Width [m]
 EnvironmentParams.chi1          = 0.052;    % Density of 1st order scatterers [1/m^2]
 EnvironmentParams.chi2          = 0.045;    % Density of 2nd order scatterers [1/m^2]
 EnvironmentParams.chi3          = 0.03;     % Density of 3rd order scatterers [1/m^2]
-EnvironmentParams.G0_1          = @(x) unifrnd(-65, -48, x);
-EnvironmentParams.G0_2          = @(x) unifrnd(-70, -59, x);
-EnvironmentParams.G0_3          = @(x) unifrnd(-75, -65, x);
+
+EnvironmentParams.G0_1          = @(x) unifrnd(-20, -3, x);
+EnvironmentParams.G0_2          = @(x) unifrnd(-25, -14, x);
+EnvironmentParams.G0_3          = @(x) unifrnd(-30, -20, x);
+
 EnvironmentParams.p1            = [-EnvironmentParams.StreetWidth/2 - EnvironmentParams.W, 0, 0];   % Point wall 1 (lower left corner)
 EnvironmentParams.p2            = [+EnvironmentParams.StreetWidth/2,                       0, 0];   % Point wall 2 (lower left corner)
 EnvironmentParams.A             = EnvironmentParams.W * EnvironmentParams.StreetLength;             % Scatterer area [m^2]
@@ -71,16 +73,20 @@ PlotScatterers(fh, Tx,                  Colors.green)
 %% Simulate
 [A, Delay, Doppler] = GetCompexCoefficients(EnvironmentParams, SimulationParams, MPCs, Tx, Rx);
 
+A_LOS = A(:,1);
+Delay_LOS = Delay(:,1);
+Doppler_LOS = Doppler(:,1);
+
 A_delay     = zeros(size(Delay), 'like', A);
 A_doppler   = zeros(size(Doppler),'like', A);
 
 for K = 1:length(SimulationParams.t)
     [~, I] = sort(Delay(K,:));
-    Delay(K,:) = Delay(K,I);
+    SortDelay(K,:) = Delay(K,I);
     A_delay(K,:) = A(K,I);
 
     [~, J] = sort(Doppler(K,:));
-    Doppler(K,:) = Doppler(K,J);
+    SortDoppler(K,:) = Doppler(K,J);
     A_doppler(K,:) = A(K, J);
 end
 
@@ -88,26 +94,15 @@ end
 
 %%
 
-% https://gubner.ece.wisc.edu/matlabLaTeXandIEEE/matlabPlotForIEEEtran.pdf
-set(0,'DefaultTextFontName','Times',...
-    'DefaultTextFontSize',18,...
-    'DefaultAxesFontName','Times',...
-    'DefaultAxesFontSize',18,...
-    'DefaultLineLineWidth',1,...
-    'DefaultLineMarkerSize',7.75)
+% % https://gubner.ece.wisc.edu/matlabLaTeXandIEEE/matlabPlotForIEEEtran.pdf
+% set(0,'DefaultTextFontName','Times',...
+%     'DefaultTextFontSize',18,...
+%     'DefaultAxesFontName','Times',...
+%     'DefaultAxesFontSize',18,...
+%     'DefaultLineLineWidth',1,...
+%     'DefaultLineMarkerSize',7.75)
 
 
-t = 200;
-figure('Name', sprintf('Power delay, t = %d s', SimulationParams.t(t))); 
-plot(Delay(t,:), abs(A_delay(t,:)).^2)
-title(sprintf('Power delay, t = %2.2d s', SimulationParams.t(t)))
-xlabel('Delay, m')
-ylabel('Power, W')
-print('-depsc2','-r600','GSCMpowerDelay.eps')
-print('-dpdf','-r600','GSCMpowerDelay.pdf')
-
-figure('Name', 'Doppler');
-imagesc(Doppler);
 
 figure('Name', 'Doppler Histogram');
 histogram(Doppler(Doppler~=0), 50);
@@ -118,9 +113,10 @@ print('-dpdf','-r600','GSCMdopplerHist.pdf')
 
 
 t = repmat(SimulationParams.t', 1, size(A, 2));
-figure; 
-surf(t, Doppler, abs(A_doppler).^2, 'EdgeAlpha', 0.001); 
+figure; hold on
+surf(t, SortDoppler, abs(A_doppler).^2, 'EdgeAlpha', 0.001); 
 view(2)
+plot3(SimulationParams.t', Doppler_LOS, abs(A_LOS).^2)
 xlabel('Time, s')
 ylabel('Doppler, Hz')
 print('-depsc2','-r600','GSCMdopplerVtime.eps')

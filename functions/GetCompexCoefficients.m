@@ -6,14 +6,18 @@ function [A, Delay, Doppler] = GetCompexCoefficients(EnvironmentParams, Simulati
     G = 10*ones(size(Delay.LoS));
     A_LOS = CalcCoefficients(SimulationParams, Tx.Frequency, G, Delay.LoS, Doppler.LoS);
     
-    G = EnvironmentParams.G0_1(size(Delay.FirstOrder));
-    A1 = CalcCoefficients(SimulationParams, Tx.Frequency, G, Delay.FirstOrder, Doppler.FirstOrder);
+    N = size(Delay.FirstOrder,2);
+    G = EnvironmentParams.G0_1([1, N]);
+    G = repmat(G, length(SimulationParams.t), 1);    A1 = CalcCoefficients(SimulationParams, Tx.Frequency, G, Delay.FirstOrder, Doppler.FirstOrder);
     
-    G = (EnvironmentParams.G0_2(size(Delay.SecondOrder))+EnvironmentParams.G0_2(size(Delay.SecondOrder)))/2;
+    N = size(Delay.SecondOrder,2);
+    G = EnvironmentParams.G0_2([1, N]);
+    G = repmat(G, length(SimulationParams.t), 1);
     A2 = CalcCoefficients(SimulationParams, Tx.Frequency, G, Delay.SecondOrder, Doppler.SecondOrder);
     
-    N3 = size(Delay.ThirdOrder);
-    G = (EnvironmentParams.G0_3(N3)+EnvironmentParams.G0_3(N3)+EnvironmentParams.G0_3(N3))/3;
+    N = size(Delay.ThirdOrder,2);
+    G = EnvironmentParams.G0_3([1, N]);
+    G = repmat(G, length(SimulationParams.t), 1);
     A3 = CalcCoefficients(SimulationParams, Tx.Frequency, G, Delay.ThirdOrder, Doppler.ThirdOrder);
     
     A = [A_LOS, A1, A2, A3];
