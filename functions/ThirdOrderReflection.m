@@ -1,13 +1,11 @@
 function [delay,doppler] = ThirdOrderReflection(wall1,wall2, Tx, Rx)
 %THIRDORDERREFLECTION Summary of this function goes here
 %   Detailed explanation goes here
-
-    total_velocity = Tx.Velocity - Rx.Velocity;
-    max_doppler = norm(total_velocity)/physconst('LightSpeed')*Tx.Frequency;
     
+    b = length(wall1) * length(wall2);
     
-    delay = 0;
-    doppler = 0;
+    delay = zeros(b*b, 1);
+    doppler = zeros(b*b, 1);
     idx = 1;
     for i = 1:length(wall1)
         mpc3_1 = wall1(i);
@@ -26,8 +24,18 @@ function [delay,doppler] = ThirdOrderReflection(wall1,wall2, Tx, Rx)
                                       mpc3_1.Distance(mpc3_2) + ...
                                       mpc3_2.Distance(mpc3_3) + ...
                                       mpc3_3.Distance(Rx);
+                                  
+                        n1 = GetNormal(Tx.Position - mpc3_1.Position, mpc3_2.Position - mpc3_1.Position);
+                        n2 = GetNormal(mpc3_3.Position - mpc3_2.Position, mpc3_1.Position - mpc3_2.Position);
+                        n3 = GetNormal(Rx.Position - mpc3_3.Position, mpc3_2.Position - mpc3_3.Position);
+
+                        vfirst = ImagePoint(n1, Tx.Velocity);
+                        vsecond = ImagePoint(n2, vfirst);
+                        vthird = ImagePoint(n3, vsecond);
+                
+                                  
                         mpc2rx = Rx.Position - mpc3_3.Position;
-                        doppler(idx) = (total_velocity*mpc2rx')/(norm(total_velocity)*norm(mpc2rx))*max_doppler;
+                        doppler(idx) = (vthird-Rx.Velocity')'*mpc2rx'/(norm(vthird-Rx.Velocity')*norm(mpc2rx));
                         idx = idx + 1;
                         
                     end
@@ -35,6 +43,9 @@ function [delay,doppler] = ThirdOrderReflection(wall1,wall2, Tx, Rx)
             end
         end
     end
+    
+    delay = delay(1:idx-1);
+    doppler = doppler(1:idx-1);
     
     
 end

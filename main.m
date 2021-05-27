@@ -31,31 +31,34 @@ EnvironmentParams.p1            = [-EnvironmentParams.StreetWidth/2 - Environmen
 EnvironmentParams.p2            = [+EnvironmentParams.StreetWidth/2,                       0, 0];   % Point wall 2 (lower left corner)
 EnvironmentParams.A             = EnvironmentParams.W * EnvironmentParams.StreetLength;             % Scatterer area [m^2]
 
-MPCs                            = GenerateScatterers(EnvironmentParams);
 
-RxStartPos  = [ EnvironmentParams.StreetWidth/4, 0+5, 0];
-TxStartPos  = [-EnvironmentParams.StreetWidth/4, EnvironmentParams.StreetLength-5, 0];
-TxVel       = [0, -20, 0];
-RxVel       = [0, +20, 0];
+%% Generate MPC's and Tranceivers 
 
-Tx = Transceiver(TxStartPos,[0,0,0], TxVel, 5.9e9);
-Rx = Transceiver(RxStartPos,[0,0,0], RxVel, 5.9e9);
+MPCs                    = GenerateScatterers(EnvironmentParams);
 
-clear RxStartPos TxStartPos TxVel RxVel
+OFDMStruct = struct();
+OFDMStruct.BW           = 20E6;
+OFDMStruct.Nfft         = 64;
+OFDMStruct.Ncarriers    = 20;
+OFDMStruct.df           = OFDMStruct.BW / OFDMStruct.Nfft;
+OFDMStruct.Ncarriers    = 52;
 
-% Time
+% Transceiver(position, normalVector, velVector, fc, ofdm)
+Tx = Transceiver([-EnvironmentParams.StreetWidth/4, EnvironmentParams.StreetLength-5, 0],...
+                 [0,0,0],...
+                 [0, -20, 0],...
+                 5.9e9,...
+                 OFDMStruct);
 
-% 
-% BW = 10e6; % depends on the specification 802.11p bandwidth has 10 MHz, 802.11b has 20 MHz
-% Nfft = 52;
-% df = 156.25e3; % for 802.11p df=156.25e3, 802.11b df=312.5e3
-% fs = 52*df;
-% ts = 1/fs;
-% dt = 0:ts:1000*ts;
-SimulationParams = struct();
-% SimulationParams.Nfft    = 52;
-% SimulationParams.df      = 156.25e3; % for 802.11p df=156.25e3, 802.11b df=312.5e3
-SimulationParams.fs      = 1e2;     % [Hz]
+Rx = Transceiver([EnvironmentParams.StreetWidth/4, 0+5, 0],...
+                 [0,0,0],...
+                 [0, +20, 0],...
+                 5.9e9,...
+                 OFDMStruct);
+
+%% Simulation parameters, time, dt
+SimulationParams         = struct();
+SimulationParams.fs      = 1e1;     % [Hz]
 SimulationParams.Ts      = 1/SimulationParams.fs;    % [s]
 SimulationParams.tend    = 9.5;     % [s]
 SimulationParams.t       = 0:SimulationParams.Ts:SimulationParams.tend;
@@ -73,51 +76,19 @@ PlotScatterers(fh, Tx,                  Colors.green)
 %% Simulate
 [A, Delay, Doppler] = GetCompexCoefficients(EnvironmentParams, SimulationParams, MPCs, Tx, Rx);
 
-A_LOS = A(:,1);
-Delay_LOS = Delay(:,1);
-Doppler_LOS = Doppler(:,1);
+%%
+A(isnan(A)) = 0;
+Doppler(isnan(Doppler)) = 0;
 
-A_delay     = zeros(size(Delay), 'like', A);
-A_doppler   = zeros(size(Doppler),'like', A);
+Hft = sum(A, 3);
 
-for K = 1:length(SimulationParams.t)
-    [~, I] = sort(Delay(K,:));
-    SortDelay(K,:) = Delay(K,I);
-    A_delay(K,:) = A(K,I);
-
-    [~, J] = sort(Doppler(K,:));
-    SortDoppler(K,:) = Doppler(K,J);
-    A_doppler(K,:) = A(K, J);
-end
-
+figure; stem(abs(Hft))
     
 
 %%
-
-% % https://gubner.ece.wisc.edu/matlabLaTeXandIEEE/matlabPlotForIEEEtran.pdf
-% set(0,'DefaultTextFontName','Times',...
-%     'DefaultTextFontSize',18,...
-%     'DefaultAxesFontName','Times',...
-%     'DefaultAxesFontSize',18,...
-%     'DefaultLineLineWidth',1,...
-%     'DefaultLineMarkerSize',7.75)
-
-
-
 figure('Name', 'Doppler Histogram');
 histogram(Doppler(Doppler~=0), 50);
 title('Doppler Histogram')
 xlabel('Doppler shift, Hz')
-print('-depsc2','-r600','GSCMdopplerHist.eps')
-print('-dpdf','-r600','GSCMdopplerHist.pdf')
-
-
-t = repmat(SimulationParams.t', 1, size(A, 2));
-figure; hold on
-surf(t, SortDoppler, abs(A_doppler).^2, 'EdgeAlpha', 0.001); 
-view(2)
-plot3(SimulationParams.t', Doppler_LOS, abs(A_LOS).^2)
-xlabel('Time, s')
-ylabel('Doppler, Hz')
-print('-depsc2','-r600','GSCMdopplerVtime.eps')
-print('-dpdf','-r600','GSCMdopplerVtime.pdf')
+% print('-depsc2','-r600','GSCMdopplerHist.eps')
+% print('-dpdf','-r600','GSCMdopplerHist.pdf')
